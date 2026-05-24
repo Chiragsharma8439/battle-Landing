@@ -6,10 +6,11 @@ import bannerImg from './assets/banner.png';
 import logoImg from './assets/logo.png';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 
-// Define the launch date (55 days from now)
-const launchDate = new Date();
-launchDate.setDate(launchDate.getDate() + 55);
-launchDate.setHours(launchDate.getHours() + 10);
+const COUNTDOWN_MS = 55 * 24 * 60 * 60 * 1000;
+
+function getLaunchDate() {
+  return new Date(Date.now() + COUNTDOWN_MS);
+}
 
 function useCountdown() {
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft());
@@ -23,6 +24,7 @@ function useCountdown() {
 }
 
 function getTimeLeft() {
+  const launchDate = getLaunchDate();
   const diff = launchDate.getTime() - Date.now();
   if (diff <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
