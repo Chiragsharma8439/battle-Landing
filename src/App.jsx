@@ -8,24 +8,9 @@ import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 const COUNTDOWN_MS = 55 * 24 * 60 * 60 * 1000;
 
-function getLaunchDate() {
-  return new Date(Date.now() + COUNTDOWN_MS);
-}
-
-function useCountdown() {
-  const [timeLeft, setTimeLeft] = useState(() => getTimeLeft());
-
-  useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(getTimeLeft()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return timeLeft;
-}
-
-function getTimeLeft() {
-  const launchDate = getLaunchDate();
+function getTimeLeft(launchDate) {
   const diff = launchDate.getTime() - Date.now();
+
   if (diff <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
@@ -36,6 +21,18 @@ function getTimeLeft() {
     minutes: Math.floor((diff / (1000 * 60)) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
+}
+
+function useCountdown() {
+  const [launchDate] = useState(() => new Date(Date.now() + COUNTDOWN_MS));
+  const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(launchDate));
+
+  useEffect(() => {
+    const timer = setInterval(() => setTimeLeft(getTimeLeft(launchDate)), 1000);
+    return () => clearInterval(timer);
+  }, [launchDate]);
+
+  return timeLeft;
 }
 
 // 3D Canvas component rendering dynamic luxury golden particles
